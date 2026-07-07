@@ -1,0 +1,18 @@
+# Binaries
+/bin/
+*.exe
+
+# Editor / OS
+*.swp
+.DS_Store
+.fuse_hidden*
+
+# Go toolchain tarball for Claude's sandbox
+go*.tar.gz
+
+# Terraform local state and caches (never commit: may contain secrets)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+.vscode

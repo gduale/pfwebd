@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>pfwebd — OpenBSD PF</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>pfwebd <span class="sub">OpenBSD Packet Filter</span></h1>
+    <div class="header-right">
+      <span id="pf-badge" class="badge">…</span>
+      <span id="pf-uptime" class="uptime"></span>
+      <button id="refresh-toggle" class="btn" title="Pause/resume auto-refresh">⏸ Pause</button>
+      <button id="theme-toggle" class="btn" title="Toggle light/dark theme">☀️</button>
+    </div>
+  </header>
+
+  <div id="error-bar" class="error-bar hidden"></div>
+
+  <main>
+    <section class="cards" id="overview-cards">
+      <div class="card"><div class="card-value" id="c-states">–</div><div class="card-label">active states</div></div>
+      <div class="card"><div class="card-value" id="c-searches">–</div><div class="card-label">searches /s</div></div>
+      <div class="card"><div class="card-value" id="c-match">–</div><div class="card-label">packets matched</div></div>
+      <div class="card"><div class="card-value" id="c-rules">–</div><div class="card-label">rules loaded</div></div>
+    </section>
+
+    <section class="panel">
+      <h2>Rules</h2>
+      <div class="table-wrap">
+        <table id="rules-table">
+          <thead>
+            <tr><th>Rule</th><th class="num">Eval.</th><th class="num">Packets</th><th class="num">Bytes</th><th class="num">States</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Tables <span id="table-msg" class="table-msg"></span></h2>
+      <div class="tables-layout">
+        <ul id="tables-list" class="tables-list"></ul>
+        <div class="table-detail">
+          <ul id="addr-list" class="addr-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Anchor "pfwebd"</h2>
+      <pre id="anchor-live">–</pre>
+    </section>
+
+    <section class="panel">
+      <h2>pflog stream
+        <span class="log-controls">
+          <input id="log-filter" type="search" placeholder="filter">
+          <button id="log-pause" class="btn" title="Pause display">⏸</button>
+          <button id="log-clear" class="btn" title="Clear">Clear</button>
+        </span>
+      </h2>
+      <div id="log-view" class="log-view"><div class="log-line muted">connecting to pflog stream…</div></div>
+    </section>
+
+    <section class="panel">
+      <h2>States <input id="state-filter" type="search" placeholder="filter (ip, port, proto…)"></h2>
+      <div class="table-wrap">
+        <table id="states-table">
+          <thead>
+            <tr><th>If</th><th>Proto</th><th>Source</th><th></th><th>Destination</th><th>State</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section class="panel">
+        <h2>PF counters</h2>
+        <div class="table-wrap">
+          <table id="counters-table">
+            <thead><tr><th>Counter</th><th class="num">Total</th><th class="num">Rate</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Interfaces</h2>
+        <pre id="interfaces-raw">–</pre>
+      </section>
+    </div>
+  </main>
+
+  <footer>pfwebd v0.5 — monitoring, tables, live logs, rule editor with anti-lockout, Terraform-ready</footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

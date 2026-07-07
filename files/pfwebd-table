@@ -1,0 +1,35 @@
+#!/bin/ksh
+#
+# pfwebd-table — restricted wrapper around pfctl table operations.
+# Install to /usr/local/sbin/pfwebd-table (root:bin, mode 755).
+#
+# This is the ONLY dynamic-argument command pfwebd is allowed to run
+# through doas. It re-validates everything so that even a compromised
+# pfwebd process cannot run arbitrary pfctl commands.
+#
+# usage: pfwebd-table show|add|delete <table> [address]
+
+op=$1
+table=$2
+addr=$3
+
+case "$op" in
+show|add|delete) ;;
+*) echo "pfwebd-table: invalid operation" >&2; exit 1 ;;
+esac
+
+# Table name: alnum/underscore/dash only, must not start with '-'
+case "$table" in
+""|-*|*[!A-Za-z0-9_-]*) echo "pfwebd-table: invalid table name" >&2; exit 1 ;;
+esac
+
+if [ "$op" = "show" ]; then
+	exec /sbin/pfctl -t "$table" -T show
+fi
+
+# Address: IP or CIDR characters only, must not start with '-'
+case "$addr" in
+""|-*|*[!0-9A-Fa-f:./]*) echo "pfwebd-table: invalid address" >&2; exit 1 ;;
+esac
+
+exec /sbin/pfctl -t "$table" -T "$op" "$addr"

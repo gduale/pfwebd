@@ -1,0 +1,50 @@
+#!/bin/ksh
+#
+# /etc/rc.d/pfwebd — rc script for the pfwebd daemon.
+# Install the binary to /usr/local/sbin/pfwebd and enable with:
+#   rcctl enable pfwebd
+#   rcctl start pfwebd
+
+daemon="/usr/local/sbin/pfwebd"
+daemon_flags="-addr 127.0.0.1:8080 -rules-file /var/db/pfwebd/rules.conf -tokens-file /etc/pfwebd/tokens"
+daemon_user="_pfwebd"
+
+# Note: create the state directory once with:
+#   install -d -o _pfwebd -g _pfwebd -m 700 /var/db/pfwebd
+# And the tokens file (see examples/tokens), readable only by _pfwebd:
+#   install -d -m 755 /etc/pfwebd
+#   install -o _pfwebd -g _pfwebd -m 600 /dev/null /etc/pfwebd/tokens
+
+. /etc/rc.d/rc.subr
+
+rc_bg=YES
+
+# "rcctl reload pfwebd" sends SIGHUP, which makes pfwebd re-read its
+# tokens file — rotate or revoke tokens without restarting the daemon.
+# (rc_reload is left at its default so reload is enabled.)
+
+# --- API tokens ---------------------------------------------------------
+#
+# Recommended: manage tokens in the -tokens-file above (hashed, scoped,
+# reloadable). Generate one with:  pfwebd -gen-token
+#
+# Alternative: a single token via the PFWEBD_TOKEN environment
+# variable. You cannot just "export" it here (rc.subr starts the daemon
+# through "su -l", which resets the environment). Use a small wrapper that
+# exec's the binary, and override pexp so rcctl matches the real process:
+#
+#      doas tee /usr/local/sbin/pfwebd-with-token >/dev/null <<'EOF'
+#      #!/bin/sh
+#      . /etc/pfwebd.env          # contains: export PFWEBD_TOKEN=...
+#      exec /usr/local/sbin/pfwebd "$@"
+#      EOF
+#      doas chmod 755 /usr/local/sbin/pfwebd-with-token
+#
+#   then set, in this script:
+#      daemon="/usr/local/sbin/pfwebd-with-token"
+#      pexp="/usr/local/sbin/pfwebd ${daemon_flags}"
+#
+# Without any token, pfwebd still runs fine as a pure read-only dashboard.
+# -----------------------------------------------------------------------
+
+rc_cmd $1

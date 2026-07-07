@@ -1,0 +1,23 @@
+# /etc/pfwebd/tokens — API tokens for pfwebd.
+#
+# One token per line:   <name>  <scope>  <sha256(token)>
+#   - name  : free label, for your own bookkeeping (must be unique)
+#   - scope : "read" or "write" ("write" is required to modify anything)
+#   - hash  : lowercase hex SHA-256 of the token (the token itself is
+#             never stored here)
+#
+# Generate a token. Run under doas (write access to this file) and the line is
+# appended here automatically; otherwise the line is printed for you to add:
+#   doas pfwebd -gen-token -token-name client -token-scope write
+# Hash an existing token:
+#   printf '%s' "$TOKEN" | pfwebd -hash-token
+#
+# This file is reloaded on SIGHUP (rcctl reload pfwebd): edit, then
+# reload — no restart needed. Keep it readable only by _pfwebd:
+#   install -o _pfwebd -g _pfwebd -m 600 /dev/null /etc/pfwebd/tokens
+#
+# Blank lines and lines starting with '#' are ignored.
+
+# Example entries (replace the hashes with your own):
+terraform   write   9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+monitoring  read    2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae
